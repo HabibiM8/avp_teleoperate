@@ -18,13 +18,7 @@ from teleop.robot_control.robot_hand_unitree import Dex3_1_Controller, Gripper_C
 from teleop.image_server.image_client import ImageClient
 from teleop.utils.episode_writer import EpisodeWriter
 
-shared_hand_poses = {
-    "left_wrist_pos": np.zeros(3),
-    "left_wrist_ori": np.eye(3),
-    "right_wrist_pos": np.zeros(3),
-    "right_wrist_ori": np.eye(3),
-}
-shared_hand_lock = threading.Lock()
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -127,20 +121,7 @@ if __name__ == '__main__':
             running = True
             while running:
                 start_time = time.time()
-                head_rmat, left_wrist, right_wrist, left_hand, right_hand = tv_wrapper.get_data() #log this!!!!!!!!!!!
-
-                #extract 3D Pos:
-                left_pos = left_wrist[:3, 3].copy()
-                right_pos = right_wrist[:3, 3].copy()
-                left_ori = left_wrist[:3, :3].copy()
-                right_ori = right_wrist[:3, :3].copy()
-
-                with shared_hand_lock:
-                    shared_hand_poses["left_wrist_pos"] = left_pos
-                    shared_hand_poses["left_wrist_ori"] = left_ori
-                    shared_hand_poses["right_wrist_pos"] = right_pos
-                    shared_hand_poses["right_wrist_ori"] = right_ori
-
+                head_rmat, left_wrist, right_wrist, left_hand, right_hand = tv_wrapper.get_data()
 
                 # send hand skeleton data to hand_ctrl.control_process
                 if args.hand:
